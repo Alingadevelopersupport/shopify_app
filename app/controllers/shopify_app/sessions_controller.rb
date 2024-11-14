@@ -10,10 +10,12 @@ module ShopifyApp
     end
 
     def new
+      p "Call ::::::: new method"
       authenticate if sanitized_shop_name.present?
     end
 
     def create
+      p "Call ::::::: create method"
       authenticate
     end
 
@@ -60,18 +62,18 @@ module ShopifyApp
     private
 
     def authenticate
-      return render_invalid_shop_error unless sanitized_shop_name.present?
-      session['shopify.omniauth_params'] = { shop: sanitized_shop_name }
+      # return render_invalid_shop_error unless sanitized_shop_name.present?
+      # session['shopify.omniauth_params'] = { shop: sanitized_shop_name }
 
-      copy_return_to_param_to_session
+      # copy_return_to_param_to_session
 
-      set_user_tokens_option
+      # set_user_tokens_option
 
-      if user_agent_can_partition_cookies
-        authenticate_with_partitioning
-      else
-        authenticate_normally
-      end
+      # if user_agent_can_partition_cookies
+      #   authenticate_with_partitioning
+      # else
+      #   authenticate_normally
+      # end
     end
 
     def authenticate_normally
