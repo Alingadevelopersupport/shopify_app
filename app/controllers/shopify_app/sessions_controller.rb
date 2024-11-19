@@ -10,12 +10,12 @@ module ShopifyApp
     end
 
     def new
-      p "Call ::::::: new method"
+      Rails.logger.info "Call ::::::: new method"
       authenticate if sanitized_shop_name.present?
     end
 
     def create
-      p "Call ::::::: create method"
+      Rails.logger.info "Call ::::::: create method"
       authenticate
     end
 
