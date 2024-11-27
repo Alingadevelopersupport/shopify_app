@@ -3,17 +3,20 @@
 (function () {
   function redirect() {
     var redirectTargetElement = document.getElementById("redirection-target");
-
+    console.log("redirectTargetElement", redirectTargetElement)
     if (!redirectTargetElement) {
       return;
     }
 
     var targetInfo = JSON.parse(redirectTargetElement.dataset.target);
-
+    console.log("targetInfo", targetInfo)
+    console.log("targetInfo.url", targetInfo.url)
     if (window.top == window.self) {
+      console.log("window.top", window.top)
       // If the current window is the 'parent', change the URL by setting location.href
       window.top.location.href = targetInfo.url;
     } else {
+      console.log("call else")
       // If the current window is the 'child' or embedded, change the parent's URL with
       // App Bridge redirect. This case can happen when an app updates its access scopes,
       // or the unlikely scenario where the shop thinks the app is installed, but the

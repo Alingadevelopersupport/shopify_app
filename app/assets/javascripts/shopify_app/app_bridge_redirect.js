@@ -2,10 +2,12 @@
 
 (function(window) {
   function appBridgeRedirect(url) {
+    console.log("url", url)
     var AppBridge = window['app-bridge'];
     var createApp = AppBridge.default;
     var Redirect = AppBridge.actions.Redirect;
     var shopifyData = document.body.dataset;
+    console.log("shopifyData", shopifyData)
 
     var app = createApp({
       apiKey: shopifyData.apiKey,
