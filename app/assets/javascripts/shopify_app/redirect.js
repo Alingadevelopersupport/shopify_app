@@ -3,6 +3,7 @@
 (function () {
   function redirect() {
     var redirectTargetElement = document.getElementById("redirection-target");
+    alert("call redirect.js");
     console.log("redirectTargetElement", redirectTargetElement)
     if (!redirectTargetElement) {
       return;
