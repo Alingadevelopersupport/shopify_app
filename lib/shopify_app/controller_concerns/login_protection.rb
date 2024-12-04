@@ -59,7 +59,7 @@ module ShopifyApp
     end
 
     def shop_session
-      Rails.logger.info "Fetching shop session..."
+      Rails.logger.info "Fetching shop session... #{ShopifyApp.configuration}"
     
       session_info = nil
       if shop_session_by_jwt
@@ -76,13 +76,13 @@ module ShopifyApp
     end
 
     def shop_session_by_jwt
-      Rails.logger.info "Attempting to retrieve shop session by JWT..."
+      Rails.logger.info "Attempting to retrieve shop session by JWT... #{jwt_shopify_domain}"
     
       if ShopifyApp.configuration.allow_jwt_authentication
         if jwt_shopify_domain
-          session = ShopifyApp::SessionRepository.retrieve_shop_session_by_shopify_domain(jwt_shopify_domain)
-          Rails.logger.info "Shop session by JWT retrieved: #{session.inspect}"
-          session
+          session_info = ShopifyApp::SessionRepository.retrieve_shop_session_by_shopify_domain(jwt_shopify_domain)
+          Rails.logger.info "Shop session by JWT retrieved: #{session_info.inspect}"
+          session_info
         else
           Rails.logger.warn "No JWT Shopify domain found."
           nil
@@ -94,13 +94,13 @@ module ShopifyApp
     end
 
     def shop_session_by_cookie
-      Rails.logger.info "Attempting to retrieve shop session by Cookie..."
+      Rails.logger.info "Attempting to retrieve shop session by Cookie... #{session}"
     
       if ShopifyApp.configuration.allow_cookie_authentication
         if session[:shop_id].present?
-          session = ShopifyApp::SessionRepository.retrieve_shop_session(session[:shop_id])
-          Rails.logger.info "Shop session by Cookie retrieved: #{session.inspect}"
-          session
+          session_info = ShopifyApp::SessionRepository.retrieve_shop_session(session[:shop_id])
+          Rails.logger.info "Shop session by Cookie retrieved: #{session_info.inspect}"
+          session_info
         else
           Rails.logger.warn "No shop_id found in session."
           nil
