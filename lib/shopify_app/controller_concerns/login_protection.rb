@@ -59,19 +59,56 @@ module ShopifyApp
     end
 
     def shop_session
-      shop_session_by_jwt || shop_session_by_cookie
+      Rails.logger.info "Fetching shop session..."
+    
+      session_info = nil
+      if shop_session_by_jwt
+        session_info = shop_session_by_jwt
+        Rails.logger.info "Shop session retrieved by JWT: #{session_info.inspect}"
+      elsif shop_session_by_cookie
+        session_info = shop_session_by_cookie
+        Rails.logger.info "Shop session retrieved by Cookie: #{session_info.inspect}"
+      else
+        Rails.logger.warn "No shop session found."
+      end
+    
+      session_info
     end
 
     def shop_session_by_jwt
-      return unless ShopifyApp.configuration.allow_jwt_authentication
-      return unless jwt_shopify_domain
-      ShopifyApp::SessionRepository.retrieve_shop_session_by_shopify_domain(jwt_shopify_domain)
+      Rails.logger.info "Attempting to retrieve shop session by JWT..."
+    
+      if ShopifyApp.configuration.allow_jwt_authentication
+        if jwt_shopify_domain
+          session = ShopifyApp::SessionRepository.retrieve_shop_session_by_shopify_domain(jwt_shopify_domain)
+          Rails.logger.info "Shop session by JWT retrieved: #{session.inspect}"
+          session
+        else
+          Rails.logger.warn "No JWT Shopify domain found."
+          nil
+        end
+      else
+        Rails.logger.warn "JWT authentication is not allowed in the configuration."
+        nil
+      end
     end
 
     def shop_session_by_cookie
-      return unless ShopifyApp.configuration.allow_cookie_authentication
-      return unless session[:shop_id].present?
-      ShopifyApp::SessionRepository.retrieve_shop_session(session[:shop_id])
+      Rails.logger.info "Attempting to retrieve shop session by Cookie..."
+    
+      if ShopifyApp.configuration.allow_cookie_authentication
+        if session[:shop_id].present?
+          session = ShopifyApp::SessionRepository.retrieve_shop_session(session[:shop_id])
+          Rails.logger.info "Shop session by Cookie retrieved: #{session.inspect}"
+          session
+        else
+          Rails.logger.warn "No shop_id found in session."
+          nil
+        end
+      else
+        Rails.logger.warn "Cookie authentication is not allowed in the configuration."
+        nil
+      end
     end
 
     def login_again_if_different_user_or_shop
