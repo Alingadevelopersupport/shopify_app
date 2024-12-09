@@ -70,13 +70,14 @@ module ShopifyApp
     end
 
     def shop_session_by_cookie
-      Rails.logger.info "::::::::: Attempting to retrieve shop session by Cookie... #{session.inspect}"
+      Rails.logger.info "::::::::: Attempting to retrieve shop session by Cookie... #{session[:shop_id]}"
       return unless ShopifyApp.configuration.allow_cookie_authentication
       return unless session[:shop_id].present?
       ShopifyApp::SessionRepository.retrieve_shop_session(session[:shop_id])
     end
 
     def login_again_if_different_user_or_shop
+      Rails.logger.info "::::::::: user_session #{session[:user_session]} ::::::::: session #{params[:session]} :::::::::"
       if session[:user_session].present? && params[:session].present? # session data was sent/stored correctly
         clear_session = session[:user_session] != params[:session] # current user is different from stored user
       end
@@ -86,6 +87,8 @@ module ShopifyApp
         (current_shopify_session.domain != params[:shop])
         clear_session = true
       end
+
+      Rails.logger.info "::::::::: clear_session ::::::::: #{clear_session} :::::::::"
 
       if clear_session
         clear_shopify_session
@@ -118,13 +121,17 @@ module ShopifyApp
     end
 
     def redirect_to_login
+      Rails.logger.info "::::::::: redirect_to_login :::::::::"
       if request.xhr?
+        Rails.logger.info "::::::::: redirect_to_login call if :::::::::"
         head(:unauthorized)
       else
         if request.get?
+          Rails.logger.info "::::::::: redirect_to_login call else if :::::::::"
           path = request.path
           query = sanitized_params.to_query
         else
+          Rails.logger.info "::::::::: redirect_to_login call else else :::::::::"
           referer = URI(request.referer || "/")
           path = referer.path
           query = "#{referer.query}&#{sanitized_params.to_query}"
@@ -149,10 +156,12 @@ module ShopifyApp
 
     def login_url_with_optional_shop(top_level: false)
       url = ShopifyApp.configuration.login_url
+      Rails.logger.info "::::::::: url ::::::::: #{url} :::::::::"
 
       query_params = login_url_params(top_level: top_level)
 
       url = "#{url}?#{query_params.to_query}" if query_params.present?
+      Rails.logger.info "::::::::: new url ::::::::: #{url} :::::::::"
       url
     end
 
@@ -172,6 +181,7 @@ module ShopifyApp
         query_params[:shop] ||= referer_sanitized_shop_name
       end
 
+      Rails.logger.info "::::::::: params ::::::::: #{params.inspect} :::::::::"
       if params[:host].present?
         query_params[:host] ||= host
       end
