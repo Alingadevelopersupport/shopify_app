@@ -19,19 +19,24 @@ module ShopifyApp
     ACCESS_TOKEN_REQUIRED_HEADER = 'X-Shopify-API-Request-Failure-Unauthorized'
 
     def activate_shopify_session
+      Rails.logger.info ":::::::: user_session_expected? :::::::: #{user_session_expected?} :::::::: user_session :::::::: #{user_session.blank?} :::::::: #{user_session&.inspect} ::::::::"
       if user_session_expected? && user_session.blank?
+        Rails.logger.info ":::::::: call if of activate_shopify_session ::::::::" 
         signal_access_token_required
         return redirect_to_login
       end
 
+      Rails.logger.info ":::::::: current_shopify_session :::::::: #{current_shopify_session&.inspect} :::::::: #{current_shopify_session.blank?} ::::::::"
       return redirect_to_login if current_shopify_session.blank?
 
       clear_top_level_oauth_cookie
 
       begin
+        Rails.logger.info ":::::::: begin activate_shopify_session ::::::::"
         ShopifyAPI::Base.activate_session(current_shopify_session)
         yield
       ensure
+        Rails.logger.info ":::::::: ensure activate_shopify_session ::::::::"
         ShopifyAPI::Base.clear_session
       end
     end
