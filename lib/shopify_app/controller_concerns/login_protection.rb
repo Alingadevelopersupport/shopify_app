@@ -205,7 +205,7 @@ module ShopifyApp
       if ShopifyApp.configuration.embedded_app?
         Rails.logger.info "::::::: fullpage_redirect_to current_shopify_domain ::::::: #{current_shopify_domain} :::::::"
         render('shopify_app/shared/redirect', layout: false,
-               locals: { url: url, current_shopify_domain: current_shopify_domain })
+               locals: { url: url, current_shopify_domain: current_shopify_domain }, format: :html)
       else
         Rails.logger.info "::::::: fullpage_redirect_to else :::::::"
         redirect_to(url)
